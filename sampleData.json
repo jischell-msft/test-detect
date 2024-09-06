@@ -1,0 +1,30 @@
+{
+    "Executables": [
+        "arp.exe",
+        "calc.exe",
+        "clip.exe",
+        "cmd.exe",
+        "findstr.exe",
+        "mmc.exe",
+        "net.exe",
+        "notepad.exe",
+        "osk.exe",
+        "ping.exe",
+        "reg.exe",
+        "whoami.exe"
+    ]
+},
+{
+    "Tests": {
+        "ScheduledTask": {
+            "Commands": [
+                "schtasks",
+                "schtasks.exe"
+            ],
+            "ParameterDelimiter": [
+                "-",
+                "/"
+            ]
+        }
+    }
+}
