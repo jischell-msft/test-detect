@@ -1,4 +1,4 @@
-function Disable-Defender_RealTimeMonitoring {
+function Disable-Defender.RealTimeMonitoring {
     [CmdletBinding()]
     param (   
     )
@@ -10,14 +10,14 @@ function Disable-Defender_RealTimeMonitoring {
         }
     }
     process {
-        Set-MpPreference -DisableRealtimeMonitoring $True
+        Set-MpPreference -DisableRealtimeMonitoring $True -Force 
     }
     end {
         Out-Default -InputObject "Real Time Monitoring now currently disabled."
     }
 }
 
-function Enable-Defender_RealTimeMonitoring {
+function Enable-Defender.RealTimeMonitoring {
     [CmdletBinding()]
     param (   
     )
@@ -29,7 +29,7 @@ function Enable-Defender_RealTimeMonitoring {
         }
     }
     process {
-        Set-MpPreference -DisableRealtimeMonitoring $False
+        Set-MpPreference -DisableRealtimeMonitoring $False -Force
     }
     end {
         Out-Default -InputObject "Real Time Monitoring now currently disabled."
