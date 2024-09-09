@@ -1,4 +1,10 @@
 function Disable-Defender.RealTimeMonitoring {
+    <#
+.SYNOPSIS
+Disable Real Time Monitoring capability in Microsoft Defender
+#>
+
+
     [CmdletBinding()]
     param (   
     )
@@ -18,6 +24,12 @@ function Disable-Defender.RealTimeMonitoring {
 }
 
 function Enable-Defender.RealTimeMonitoring {
+    <#
+.SYNOPSIS
+Enable Real Time Monitoring capability in Microsoft Defender
+#>
+
+
     [CmdletBinding()]
     param (   
     )

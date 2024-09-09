@@ -1,4 +1,4 @@
-function New-Test.ScheduledTask {
+function New-Test.SchTasks {
     <#
 .SYNOPSIS
 .DESCRIPTION
@@ -8,8 +8,13 @@ function New-Test.ScheduledTask {
 
     [CmdletBinding()]
     param (
-        [ValidateSet('All', 'Sys32', 'SysWow64')]
-        $Arch = 'All'
+        [Parameter()]
+        [ValidateSet('All', 'System32', 'SysWow64')]
+        $Arch = 'All',
+
+        [Parameter()]
+        [ValidateSet('Dash', 'Slash', 'All')]
+        $ArgumentInput
     )
     begin {
         if ($Arch -eq 'All') {
@@ -17,6 +22,16 @@ function New-Test.ScheduledTask {
         }
         else {
             $sys_dir = @( $($Arch) )
+        }
+
+        if ( $ArgumentInput -eq 'All') {
+            $arg_inp = Get-Random -InputObject @('-', '/')
+        }
+        elseif ($ArgumentInput -eq 'Dash') {
+            $arg_inp = '-'
+        }
+        else {
+            $arg_inp = '/'
         }
 
         $dateTime_str = (Get-Date -Format s).Replace(':', '_')
@@ -42,12 +57,14 @@ function New-Test.ScheduledTask {
         $sys_path = Get-Random -InputObject $sys_dir
 
         $exe_full = "$($env:windir)\$($sys_path)\$($exe_target)"
+
+
     }
     process {
         $command_out = @"
-schtasks /Create /SC Once /TN $($task_name) /TR $($exe_full) /ST $($task_time)
+schtasks $($arg_inp)Create $($arg_inp)SC Once $($arg_inp)TN $($task_name) $($arg_inp)TR $($exe_full) $($arg_inp)ST $($task_time)
 Start-Sleep -Seconds 5
-schtasks /Delete /TN $($task_name)
+schtasks $($arg_inp)Delete $($arg_inp)TN $($task_name)
 "@
     }   
     end {
