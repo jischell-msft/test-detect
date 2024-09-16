@@ -7,7 +7,7 @@ Name:       Get-Hamlet
 Created:    2024-09-11
 Modified:   2024-09-16
 Author:     JiSchell
-Version:    0.1.2
+Version:    0.1.3
 #>
 
     [CmdletBinding()]
@@ -62,12 +62,14 @@ Version:    0.1.2
                     $hamlet_clean = Get-Content -Path $HamletPath -Raw
                 }
                 else {
-                    Set-Content -Value Import-Hamlet -Path $HamletPath
+                    $hamlet_down = Import-Hamlet
+                    Set-Content -Value $hamlet_down -Path $HamletPath
                     $hamlet_clean = Get-Content -Path $HamletPath -Raw
                 }
             }
             else {
-                Set-Content -Value Import-Hamlet -Path $HamletPath
+                $hamlet_down = Import-Hamlet
+                Set-Content -Value $hamlet_down -Path $HamletPath
                 $hamlet_clean = Get-Content -Path $HamletPath -Raw
             }
         }
