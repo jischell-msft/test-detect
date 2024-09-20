@@ -33,8 +33,9 @@ class TestObject {
 
 class CampaignObject {
     [String] $name
-    [TestObject[]] $tests
+    [String] $description
     [String] $cleanup_order
+    [TestObject[]] $tests
     [String] ToString() {
         return $this.name
     }
