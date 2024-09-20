@@ -1,8 +1,11 @@
-function New-Test.Static {
+function New-Test {
     <#
 .SYNOPSIS
 .NOTES
+Created: 2024-09-05
+Modified: 2024-09-20
 
+Consolidated 'Static' and 'Dynamic' test types into single type 'Tests'
 #>
 
 
@@ -38,7 +41,7 @@ function New-Test.Static {
     }
     process {
         $test_obj = New-Object -TypeName PsObject -Property ([ordered]@{
-                'Tests.Static' = @(@{
+                'Tests' = @(@{
                         name           = $TestName
                         guid           = $guid_gen
                         description    = $TestDescription
@@ -49,9 +52,23 @@ function New-Test.Static {
                         }
                         input_argument = @(
                             @{
-                                name        = "Name"
-                                description = "Description"
-                                value       = "Value"
+                                name        = "static." + "[name_here]"
+                                description = "The value represented will be used."
+                                value       = "static value"
+                            }
+                            @{
+                                name        = "multi." + "[name_here]"
+                                description = "Select from one of the values, random choice"
+                                value       = @(
+                                    "value1"
+                                    "value2"
+                                    "value3"
+                                )
+                            }
+                            @{
+                                name        = "powershell." + "[name_here]"
+                                description = "Use result from powershell command as value"
+                                value       = "(Get-Random -Minimum 1 -Maximum 2)"
                             }
                         )
                     })

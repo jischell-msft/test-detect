@@ -1,7 +1,12 @@
-function Get-Test.Static {
+function Get-Test {
     <#
 .SYNOPSIS
 .NOTES
+
+Created: 2024-09-16
+Modified: 2024-09-20
+
+Consolidated 'Static' and 'Dynamic' test types into single type 'Tests'
 #>
 
 
@@ -27,13 +32,12 @@ function Get-Test.Static {
                 $json_content = $JSON
             }
         }
-    }
-    process {
+
         function ConvertTo-Test {
             <#
-        
-        #>
-
+            
+            #>
+    
             [CmdletBinding()]
             param (
                 [Parameter()]
@@ -56,29 +60,45 @@ function Get-Test.Static {
                     Add-Member -InputObject $test_out -Name 'input_argument' -Value $($TestInput.input_argument) -MemberType NoteProperty -Force
                 }
                 foreach ( $arg in $test_out.input_argument ) {
-                    $test_out.executor.command = $test_out.executor.command -replace ("#{$($arg.name)}", "$($arg.value)")
-                    $test_out.executor.cleanup_command = $test_out.executor.cleanup_command -replace ("#{$($arg.name)}", "$($arg.value)")
+                    switch -Wildcard ( "$($arg.name)") {
+                        "multi.*" { 
+                            $value_out = $arg.value[(Get-Random -Minimum 0 -Maximum ($arg.value.Count - 1))]
+                        }
+                        "powershell.*" {
+                            $value_out = Invoke-Expression -Command $($arg.value)
+                        }
+                        "static.*" {
+                            $value_out = $arg_value
+                        }
+                        Default {
+                            $value_out = $arg_value
+                        }
+                    }                    
+                    $test_out.executor.command = $test_out.executor.command -replace ("#{$($arg.name)}", "$($value_out)")
+                    $test_out.executor.cleanup_command = $test_out.executor.cleanup_command -replace ("#{$($arg.name)}", "$($value_out)")
                 }
             }
             end {
                 $test_out
             }
         }
+    }
+    process {
 
         $test_content = $null
 
         $test_content = ConvertFrom-Json -InputObject $json_content
 
         if ( $test_content) {
-            if ( $test_content.'Tests.Static'.Count -ge 2) {
+            if ( $test_content.'Tests'.Count -ge 2) {
                 $test_format = @()
-                foreach ( $test_sub in $test_content.'Tests.Static') {
+                foreach ( $test_sub in $test_content.'Tests') {
                     $test_format_sub = ConvertTo-Test -TestInput $test_sub
                     $test_format += @($test_format_sub)
                 }
             }
             else {
-                $test_format = ConvertTo-Test -TestInput $test_content.'Tests.Static'
+                $test_format = @(ConvertTo-Test -TestInput $test_content.'Tests')
             }
         }
     }
