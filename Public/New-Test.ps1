@@ -38,7 +38,11 @@ Consolidated 'Static' and 'Dynamic' test types into single type 'Tests'
 
         [Parameter()]
         [InputArgument[]]
-        $InputArgument
+        $InputArgument,
+
+        [Parameter()]
+        [switch]
+        $OutputJSON
     )
     begin {
         $guid_gen = (New-Guid).Guid
@@ -83,9 +87,52 @@ Consolidated 'Static' and 'Dynamic' test types into single type 'Tests'
 
         $testObject.input_argument = $input_argument_arr
         
-        $testObject_json = ConvertTo-Json -InputObject $testObject -Depth 40
+        if ( $OutputJSON ) {
+            $testObject_out = ConvertTo-Json -InputObject $testObject -Depth 40
+        }
+        else {
+            $testObject_out = $testObject
+        }
     }
     end {
-        $testObject_json
+        $testObject_out
+    }
+}
+
+function New-TestInputArgument {
+    <#
+.NOTES
+Created 2024-09-20
+#>
+
+
+    [CmdletBinding()]
+    [OutputType([InputArgument])]
+    param (
+        [Parameter()]
+        [ValidateScript({ ($_ -like "multi.*") -or ($_ -like "powershell.*") -or ($_ -like "static.*") })]
+        [string]
+        $Name,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $Description,
+        
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [string[]]
+        $Value
+    )
+    begin {
+        $inputArg = [InputArgument]::new()
+    }
+    process {
+        $inputArg.name = $Name 
+        $inputArg.description = $Description
+        $inputArg.value = $Value
+    }
+    end {
+        $inputArg
     }
 }
