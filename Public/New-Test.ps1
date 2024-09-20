@@ -136,3 +136,61 @@ Created 2024-09-20
         $inputArg
     }
 }
+
+function New-Campaign {
+    <#
+.SYNOPSIS
+.DESCRIPTION
+.NOTES
+Created 2024-09-20
+#>
+
+
+    [CmdletBinding()]
+    [OutputType([CampaignObject])]
+    param (
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $Name,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $Description,
+
+        [Parameter()]
+        [ValidateSet('FIFO', 'FILO')]
+        $CleanupOrder = 'FILO',
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [TestObject[]]
+        $Tests,
+
+        [Parameter()]
+        [switch]
+        $OutputJSON
+    )
+    
+    begin {
+        $campaign = [CampaignObject]::new()
+    }    
+    process {
+        $campaign.name = $Name
+        $campaign.description = $Description
+        $campaign.cleanup_order = $CleanupOrder
+        $campaign.tests = $Tests
+
+        if ( $OutputJSON ) {
+            $campaign_out = $campaign | ConvertTo-Json -Depth 40
+        }
+        else {
+            $campaign_out = $campaign
+        }
+    }
+    
+    end {
+        $campaign_out
+    }
+}
