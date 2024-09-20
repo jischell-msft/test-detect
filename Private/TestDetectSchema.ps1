@@ -7,16 +7,13 @@ class InputArgument {
     }
 }
 
-class TestExecutorBase {
+class TestExecutor {
     [String] $name
+    [String] $command
+    [String] $cleanup_command
     [String] ToString() {
         return $this.name
     }
-}
-
-class TestExecutor: TestExecutorBase {
-    [String] $command
-    [String] $cleanup_command
 }
 
 class TestObject {
