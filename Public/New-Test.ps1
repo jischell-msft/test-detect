@@ -9,7 +9,7 @@ Consolidated 'Static' and 'Dynamic' test types into single type 'Tests'
 #>
 
 
-    [OutputType([string])]
+    [OutputType([TestObject])]
     [CmdletBinding()]
     param (
         [Parameter()]
@@ -34,48 +34,58 @@ Consolidated 'Static' and 'Dynamic' test types into single type 'Tests'
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [string]
-        $CleanupCommand
+        $CleanupCommand,
+
+        [Parameter()]
+        [InputArgument[]]
+        $InputArgument
     )
     begin {
         $guid_gen = (New-Guid).Guid
+        $process_step = Get-Random -Minimum 1000 -Maximum 32768
     }
     process {
-        $test_obj = New-Object -TypeName PsObject -Property ([ordered]@{
-                'Tests' = @(@{
-                        name           = $TestName
-                        guid           = $guid_gen
-                        description    = $TestDescription
-                        executor       = @{
-                            name            = $Executor
-                            command         = $Command
-                            cleanup_command = $CleanupCommand
-                        }
-                        input_argument = @(
-                            @{
-                                name        = "static." + "[name_here]"
-                                description = "The value represented will be used."
-                                value       = "static value"
-                            }
-                            @{
-                                name        = "multi." + "[name_here]"
-                                description = "Select from one of the values, random choice"
-                                value       = @(
-                                    "value1"
-                                    "value2"
-                                    "value3"
-                                )
-                            }
-                            @{
-                                name        = "powershell." + "[name_here]"
-                                description = "Use result from powershell command as value"
-                                value       = "(Get-Random -Minimum 1 -Maximum 2)"
-                            }
-                        )
-                    })
-            })
-        $test_obj_json = ConvertTo-Json -InputObject $test_obj -Depth 40
+        $testExecutor = [testExecutor]::new()
+        $testExecutor.name = $Executor
+        $testExecutor.command = $Command
+        $testExecutor.cleanup_command = $CleanupCommand
+
+        $testObject = [TestObject]::new()
+
+        $testObject.name = $TestName
+        $testObject.guid = $guid_gen
+        $testObject.description = $TestDescription
+        $testObject.process_order = $process_step
+        $testObject.executor = $testExecutor
+
+        $input_argument_arr = @()
+        if ( $InputArgument.Count ) {
+            $name_count = $InputArgument.name | Group-Object 
+            if ( $name_count | Where-Object { $_.Count -gt 1 } ) {
+                Write-Error -Message "Names for InputArgument must be unique"
+                break
+            }
+            
+            foreach ( $arg in $InputArgument) {
+                $new_arg = [InputArgument]::new()
+                $new_arg.name = $arg.name
+                $new_arg.description = $arg.description
+                $new_arg.value = $arg.value
+
+                if ( ($arg.name -notlike "multi.*") -and 
+                    ($arg.name -notlike "powershell.*") -and 
+                    ($arg.name -notlike "static.*")) {
+                    Write-Warning -Message "`"$($arg.name)`" does not start with `"multi`", `"powershell`" or `"static`""
+                }
+                $input_argument_arr += @($new_arg)
+            }
+        }
+
+        $testObject.input_argument = $input_argument_arr
+        
+        $testObject_json = ConvertTo-Json -InputObject $testObject -Depth 40
     }
     end {
-        $test_obj_json
+        $testObject_json
     }
 }

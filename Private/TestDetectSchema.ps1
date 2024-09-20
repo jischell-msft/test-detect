@@ -1,21 +1,10 @@
-class InputArgumentBase {
+class InputArgument {
     [String] $name
     [String] $description
+    [String[]] $value
     [String] ToString() {
         return $this.name
     }
-}
-
-class InputArgumentMulti : InputArgumentBase {
-    [String[]] $value
-}
-
-class InputArgumentPowershell : InputArgumentBase {
-    [String] $value
-}
-
-class InputArgumentStatic : InputArgumentBase {
-    [String] $value
 }
 
 class TestExecutorBase {
@@ -35,7 +24,7 @@ class TestObject {
     [String] $guid
     [String] $description
     [int] $process_order
-    [Hashtable] $input_argument
+    [InputArgument[]] $input_argument
     [TestExecutor] $executor
     [String] ToString() {
         return $this.name
