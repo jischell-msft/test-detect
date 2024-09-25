@@ -6,6 +6,8 @@ This should look a great deal like Atomic Red Team, because it is heavily inspir
 - Use patterns and design methods implemented in Atomic Red Team
 - Extend functionality within tests, to allow for dynamic input arguments that are defined within the test. 
     - See below for more detail on input argument types 'static.', 'multi.' and 'powershell.'
+- Native powershell as much as possible. 
+    - Remove YAML/ .net YAML requirements
 
 
 ## Non Goals:
